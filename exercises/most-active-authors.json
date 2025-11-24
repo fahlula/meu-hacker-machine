@@ -1,0 +1,157 @@
+{
+  "id": "most-active-authors",
+  "title": "Autores Mais Ativos",
+  "difficulty": "medium",
+  "score": 75,
+  "category": "REST API",
+  "timeLimit": 140,
+  "description": "# Autores Mais Ativos\n\nNeste desafio, a REST API contém informações sobre uma coleção de usuários e artigos que eles criaram. Dado um valor limite (threshold), o objetivo é usar a API para obter a lista dos autores mais ativos. Especificamente, a lista de nomes de usuário (usernames) dos usuários com contagem de submissões estritamente maior que o limite fornecido. A lista de usernames deve ser retornada na ordem em que os usuários aparecem nos resultados.\n\n## Acesso à API\n\nPara acessar a coleção de usuários, execute uma requisição HTTP GET para:\n\n```\n/api/article_users?page=<pageNumber>\n```\n\nonde `<pageNumber>` é um inteiro denotando a página dos resultados a retornar.\n\nPor exemplo, uma requisição GET para `/api/article_users?page=2` retornará a segunda página da coleção de usuários. As páginas são numeradas a partir de 1, então para acessar a primeira página, você precisa pedir a página número 1.\n\n## Formato da Resposta\n\nA resposta para tal requisição é um JSON com os seguintes 5 campos:\n\n- **page**: A página atual dos resultados\n- **per_page**: O número máximo de usuários retornados por página\n- **total**: O número total de usuários em todas as páginas do resultado\n- **total_pages**: O número total de páginas com resultados\n- **data**: Um array de objetos contendo os usuários retornados na página solicitada\n\nCada registro de usuário tem o seguinte schema:\n\n- **id**: ID único do usuário\n- **username**: o nome de usuário\n- **about**: informações sobre o usuário\n- **submitted**: número total de artigos submetidos pelo usuário\n- **updated_at**: a data e hora da última atualização deste registro\n- **submission_count**: o número de artigos submetidos que foram aprovados\n- **comment_count**: o número total de comentários que o usuário fez\n- **created_at**: a data e hora quando o registro foi criado\n\n## Descrição da Função\n\nComplete a função `getUsernames` no editor abaixo.\n\n**getUsernames** tem o(s) seguinte(s) parâmetro(s):\n- **threshold**: inteiro denotando o valor limite para o número de submission_count\n\nA função deve retornar um array de strings denotando os usernames dos usuários cujo submission_count é estritamente maior que o limite fornecido. Os usernames no array devem ser ordenados na ordem em que aparecem na resposta da API.\n\n## Entrada de Exemplo\n```\n10\n```\n\n## Saída de Exemplo\n```\nepaga\npanny\nolalonde\nWisNorCan\ndmmalam\nreplicatorblog\nvladikoff\nmpweiher\ncoloneltcb\nguelo\n```\n\n## Explicação\n\nO valor limite é 10, então o resultado deve conter usernames de usuários com o valor submission_count maior que 10. Existem 10 usuários assim e seus usernames na ordem em que aparecem primeiro na resposta da API estão listados na Saída de Exemplo.",
+  "functionSignature": {
+    "name": "getUsernames",
+    "params": [
+      {
+        "name": "threshold",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<string[]>"
+  },
+  "starterCode": "async function getUsernames(threshold: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/article_users?page=${page}`);\n    const json: any = await response.json();\n\n    totalPages = json.total_pages;\n\n    json.data\n      .filter((user: any) => user.submission_count > threshold)\n      .forEach((user: any) => results.push(user.username));\n\n    page++;\n  }\n\n  return results;\n}\n\n// Test the function\n(async () => {\n  const result = await getUsernames(10);\n  console.log(result);\n})();",
+  "mockApi": {
+    "proxyPath": "/api/article_users",
+    "endpoints": [
+      {
+        "path": "/article_users",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 1000,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 12345,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "username": "{{chance.twitter().substring(1)}}",
+            "about": "{{chance.paragraph({sentences: 2})}}",
+            "submitted": "{{chance.integer({min: 5, max: 120})}}",
+            "submission_count": "{{chance.integer({min: 0, max: 60})}}",
+            "comment_count": "{{chance.integer({min: 0, max: 250})}}",
+            "created_at": "{{chance.date({string: true, year: chance.year({min: 2015, max: 2023})})}}",
+            "updated_at": "{{chance.date({string: true, year: 2024})}}",
+            "reputation": "{{chance.integer({min: 100, max: 100000})}}",
+            "badges": "{{chance.integer({min: 0, max: 50})}}"
+          },
+          "totalRecords": 1000
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": 1000,
+          "total_pages": 100,
+          "data": "{{generated_array}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo 0: threshold = 10",
+      "type": "visible",
+      "input": {
+        "threshold": 10
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "submission_count > threshold",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-threshold-zero",
+      "name": "Caso Limite: threshold = 0",
+      "type": "visible",
+      "input": {
+        "threshold": 0
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "submission_count > threshold",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-high-threshold",
+      "name": "Caso Limite: threshold alto = 45",
+      "type": "visible",
+      "input": {
+        "threshold": 45
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "submission_count > threshold",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-no-results",
+      "name": "Caso Limite: threshold acima do máximo",
+      "type": "visible",
+      "input": {
+        "threshold": 1000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "submission_count > threshold",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "pagination-check",
+      "name": "Deve lidar com paginação corretamente",
+      "type": "visible",
+      "input": {
+        "threshold": 5
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "submission_count > threshold",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    }
+  ],
+  "hints": [
+    "Lembre-se de buscar TODAS as páginas usando o campo total_pages da resposta",
+    "Filtre usuários onde submission_count > threshold (estritamente maior que, não igual)",
+    "Preserve a ordem em que os usuários aparecem nas respostas da API"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/article_users",
+        "method": "GET",
+        "description": "Get paginated list of article users",
+        "queryParams": [
+          {
+            "name": "page",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "description": "Page number (starts from 1)"
+          }
+        ],
+        "responseExample": "{\n  \"page\": 1,\n  \"per_page\": 10,\n  \"total\": 50,\n  \"total_pages\": 5,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"username\": \"epaga\",\n      \"about\": \"Java developer\",\n      \"submitted\": 50,\n      \"submission_count\": 45,\n      \"comment_count\": 120,\n      \"created_at\": \"2020-01-01\",\n      \"updated_at\": \"2024-01-01\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  "referenceCode": "async function getUsernames(threshold: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/article_users?page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((user: any) => user.submission_count > threshold)\n      .forEach((user: any) => results.push(user.username));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}

@@ -1,0 +1,169 @@
+{
+  "id": "top-products",
+  "title": "Produtos Mais Vendidos",
+  "difficulty": "easy",
+  "score": 50,
+  "category": "REST API",
+  "timeLimit": 120,
+  "description": "# Produtos Mais Vendidos\n\nUma REST API contém informações sobre produtos vendidos em uma loja online. Dado um limite mínimo de vendas, retorne a lista de nomes de produtos que têm vendas maiores ou iguais ao limite especificado.\n\n## Acesso à API\n\nPara acessar os produtos, execute uma requisição HTTP GET para:\n\n```\n/api/products?page=<pageNumber>\n```\n\nonde `<pageNumber>` é um inteiro denotando a página dos resultados.\n\n## Formato da Resposta\n\nA resposta é um JSON com os seguintes campos:\n\n- **page**: A página atual\n- **per_page**: Registros por página\n- **total**: Total de registros\n- **total_pages**: Total de páginas\n- **data**: Array de objetos de produtos\n\nCada produto tem:\n\n- **id**: ID único\n- **name**: Nome do produto\n- **sales**: Número de vendas\n- **price**: Preço do produto\n- **category**: Categoria do produto\n\n## Descrição da Função\n\nComplete a função `getTopProducts`.\n\n**getTopProducts** tem o(s) seguinte(s) parâmetro(s):\n- **minSales**: número mínimo de vendas\n\n**Retorna**: Array de strings com nomes dos produtos que têm vendas >= minSales, na ordem que aparecem na API.",
+  "functionSignature": {
+    "name": "getTopProducts",
+    "params": [
+      {
+        "name": "minSales",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<string[]>"
+  },
+  "starterCode": "async function getTopProducts(minSales: number): Promise<string[]> {\n  // TODO: Implementar\n  return [];\n}",
+  "mockApi": {
+    "proxyPath": "/api/products",
+    "endpoints": [
+      {
+        "path": "/products",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 500,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 11111,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "name": "{{chance.sentence({words: 3})}}",
+            "sales": "{{chance.integer({min: 0, max: 1200})}}",
+            "price": "{{chance.floating({min: 9.99, max: 599.99, fixed: 2})}}",
+            "category": "{{chance.pickone(['Electronics', 'Clothing', 'Home & Garden', 'Sports', 'Books', 'Toys', 'Food', 'Beauty'])}}",
+            "brand": "{{chance.pickone(['TechMax', 'StylePro', 'HomeEase', 'FitLife', 'SmartChoice', 'Premium', 'EcoFriendly', 'ValueMax'])}}",
+            "stock": "{{chance.integer({min: 0, max: 500})}}",
+            "rating": "{{chance.floating({min: 3.0, max: 5.0, fixed: 1})}}"
+          },
+          "totalRecords": 500
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": 500,
+          "total_pages": 50,
+          "data": "{{generated_array}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo: minSales = 500",
+      "type": "visible",
+      "input": {
+        "minSales": 500
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "sales >= minSales",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-zero",
+      "name": "Caso Limite: minSales = 0 (todos os produtos)",
+      "type": "visible",
+      "input": {
+        "minSales": 0
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "sales >= minSales",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-very-high",
+      "name": "Caso Limite: minSales = 999 (poucos produtos)",
+      "type": "visible",
+      "input": {
+        "minSales": 999
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "sales >= minSales",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-no-results",
+      "name": "Caso Limite: minSales = 2000 (nenhum resultado)",
+      "type": "visible",
+      "input": {
+        "minSales": 2000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "sales >= minSales",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range",
+      "name": "Caso Médio: minSales = 250",
+      "type": "visible",
+      "input": {
+        "minSales": 250
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "sales >= minSales",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-boundary",
+      "name": "Caso Limite: minSales = 1 (quase todos)",
+      "type": "visible",
+      "input": {
+        "minSales": 1
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "sales >= minSales",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    }
+  ],
+  "hints": [
+    "Lembre-se de buscar TODAS as páginas usando total_pages",
+    "Filtre produtos onde sales >= minSales",
+    "Preserve a ordem da API"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/products",
+        "method": "GET",
+        "description": "Obter lista paginada de produtos",
+        "queryParams": [
+          {
+            "name": "page",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "description": "Número da página"
+          }
+        ],
+        "responseExample": "{\n  \"page\": 1,\n  \"per_page\": 10,\n  \"total\": 500,\n  \"total_pages\": 50,\n  \"data\": [\n    {\n      \"id\": 1,\n      \"name\": \"Laptop\",\n      \"sales\": 750,\n      \"price\": 999.99,\n      \"category\": \"Electronics\"\n    }\n  ]\n}"
+      }
+    ]
+  },
+  "referenceCode": "async function getTopProducts(minSales: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/products?page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((product: any) => product.sales >= minSales)\n      .forEach((product: any) => results.push(product.name));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}

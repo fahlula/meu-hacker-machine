@@ -1,0 +1,324 @@
+{
+  "id": "employee-salary-filter",
+  "title": "Filtro de Salários de Funcionários",
+  "difficulty": "medium",
+  "score": 75,
+  "category": "REST API",
+  "timeLimit": 140,
+  "description": "# Filtro de Salários de Funcionários\n\nUma REST API contém informações sobre funcionários de uma empresa. Dado um departamento e uma faixa salarial (mínimo e máximo), retorne os nomes dos funcionários que trabalham no departamento especificado e têm salário dentro da faixa (inclusivo).\n\n## Acesso à API\n\n```\n/api/employees?department=<dept>&page=<pageNumber>\n```\n\nonde `<dept>` é o departamento e `<pageNumber>` é a página.\n\n## Formato da Resposta\n\n- **page**, **per_page**, **total**, **total_pages**, **data**\n\nCada funcionário tem:\n- **id**: ID único\n- **name**: Nome completo\n- **department**: Departamento\n- **salary**: Salário anual\n- **years_experience**: Anos de experiência\n- **position**: Cargo\n\n## Descrição da Função\n\nComplete a função `getEmployeesInSalaryRange`.\n\n**Parâmetros**:\n- **department**: departamento a filtrar\n- **minSalary**: salário mínimo (inclusivo)\n- **maxSalary**: salário máximo (inclusivo)\n\n**Retorna**: Array de nomes de funcionários que atendem aos critérios, ordenados pela ordem da API.",
+  "functionSignature": {
+    "name": "getEmployeesInSalaryRange",
+    "params": [
+      {
+        "name": "department",
+        "type": "string"
+      },
+      {
+        "name": "minSalary",
+        "type": "number"
+      },
+      {
+        "name": "maxSalary",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<string[]>"
+  },
+  "starterCode": "async function getEmployeesInSalaryRange(department: string, minSalary: number, maxSalary: number): Promise<string[]> {\n  // TODO: Implementar\n  return [];\n}",
+  "mockApi": {
+    "proxyPath": "/api/employees",
+    "endpoints": [
+      {
+        "path": "/employees",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "department",
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 600,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 33333,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "name": "{{chance.name()}}",
+            "department": "{{chance.pickone(['Engineering', 'Sales', 'Marketing', 'HR', 'Finance', 'Operations', 'Legal', 'Product'])}}",
+            "salary": "{{chance.integer({min: 35000, max: 155000})}}",
+            "years_experience": "{{chance.integer({min: 0, max: 30})}}",
+            "position": "{{faker.person.jobTitle()}}",
+            "email": "{{chance.email({domain: 'company.com'})}}",
+            "hire_date": "{{chance.date({string: true, year: chance.year({min: 1995, max: 2024})})}}"
+          },
+          "totalRecords": 600
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": "{{cityDataLength}}",
+          "total_pages": "{{Math.ceil(cityDataLength / 10)}}",
+          "data": "{{filtered_by_city}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo: Engineering, 50k-100k",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 50000,
+        "maxSalary": 100000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-full-range",
+      "name": "Caso Limite: Faixa completa (todos)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 0,
+        "maxSalary": 200000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-narrow-range",
+      "name": "Caso Limite: Faixa estreita (poucos)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 145000,
+        "maxSalary": 150000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-impossible-range",
+      "name": "Caso Limite: Faixa impossível",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 200000,
+        "maxSalary": 300000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range-low",
+      "name": "Caso Médio: Salários baixos",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 30000,
+        "maxSalary": 60000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range-high",
+      "name": "Caso Médio: Salários altos",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 100000,
+        "maxSalary": 150000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-equal-bounds",
+      "name": "Caso Limite: Min = Max (valor exato)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 75000,
+        "maxSalary": 75000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "entry-level-30k",
+      "name": "Teste: salário mínimo de 30000",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 30000,
+        "maxSalary": 200000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "entry-level-35k",
+      "name": "Teste: salário mínimo de 35000",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 35000,
+        "maxSalary": 200000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "entry-level-40k",
+      "name": "Teste: salário mínimo de 40000",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 40000,
+        "maxSalary": 200000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-level-50k",
+      "name": "Teste: salário mínimo de 50000",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 50000,
+        "maxSalary": 200000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-level-60k",
+      "name": "Teste: salário mínimo de 60000",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 60000,
+        "maxSalary": 200000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-level-70k",
+      "name": "Teste: salário mínimo de 70000",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 70000,
+        "maxSalary": 200000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "senior-level-80k",
+      "name": "Teste: salário mínimo de 80000",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 80000,
+        "maxSalary": 200000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "senior-level-90k",
+      "name": "Teste: salário mínimo de 90000",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minSalary": 90000,
+        "maxSalary": 200000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "salary >= minSalary && salary <= maxSalary",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    }
+  ],
+  "hints": [
+    "A API aceita filtro por department via query param",
+    "Aplique o filtro de salário no código, não na API",
+    "Lembre-se: minSalary <= salary <= maxSalary (ambos inclusivos)"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/employees",
+        "method": "GET",
+        "description": "Obter funcionários filtrados por departamento"
+      }
+    ]
+  },
+  "referenceCode": "async function getEmployeesInSalaryRange(department: string, minSalary: number, maxSalary: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/employees?department=${encodeURIComponent(department)}&page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((emp: any) => emp.salary >= minSalary && emp.salary <= maxSalary)\n      .forEach((emp: any) => results.push(emp.name));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}

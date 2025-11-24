@@ -1,0 +1,173 @@
+{
+  "id": "high-rated-movies",
+  "title": "Filmes com Alta Avaliação",
+  "difficulty": "easy",
+  "score": 50,
+  "category": "REST API",
+  "timeLimit": 120,
+  "description": "# Filmes com Alta Avaliação\n\nUma REST API contém informações sobre filmes. Dado um valor mínimo de avaliação (rating), retorne a lista de títulos de filmes que têm avaliação maior que o valor especificado.\n\n## Acesso à API\n\nPara acessar os filmes:\n\n```\n/api/movies?page=<pageNumber>\n```\n\n## Formato da Resposta\n\n- **page**: Página atual\n- **per_page**: Registros por página  \n- **total**: Total de registros\n- **total_pages**: Total de páginas\n- **data**: Array de filmes\n\nCada filme tem:\n- **id**: ID único\n- **title**: Título do filme\n- **rating**: Avaliação (0-10)\n- **year**: Ano de lançamento\n- **genre**: Gênero\n\n## Descrição da Função\n\nComplete a função `getHighRatedMovies`.\n\n**getHighRatedMovies** tem:\n- **minRating**: avaliação mínima (exclusivo - deve ser estritamente maior)\n\n**Retorna**: Array de títulos de filmes com rating > minRating.",
+  "functionSignature": {
+    "name": "getHighRatedMovies",
+    "params": [
+      {
+        "name": "minRating",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<string[]>"
+  },
+  "starterCode": "async function getHighRatedMovies(minRating: number): Promise<string[]> {\n  // TODO: Implementar\n  return [];\n}",
+  "mockApi": {
+    "proxyPath": "/api/movies",
+    "endpoints": [
+      {
+        "path": "/movies",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 400,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 22222,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "title": "{{chance.sentence({words: 3})}}",
+            "rating": "{{chance.floating({min: 1.0, max: 10.0, fixed: 1})}}",
+            "year": "{{chance.year({min: 1975, max: 2024})}}",
+            "genre": "{{chance.pickone(['Action', 'Comedy', 'Drama', 'Sci-Fi', 'Horror', 'Romance', 'Thriller', 'Documentary', 'Animation', 'Fantasy'])}}",
+            "director": "{{chance.name()}}",
+            "duration": "{{chance.integer({min: 85, max: 195})}}",
+            "votes": "{{chance.integer({min: 1000, max: 500000})}}"
+          },
+          "totalRecords": 400
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": 400,
+          "total_pages": 40,
+          "data": "{{generated_array}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo: minRating = 7.5",
+      "type": "visible",
+      "input": {
+        "minRating": 7.5
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "rating > minRating",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-very-low",
+      "name": "Caso Limite: minRating = 1.0 (quase todos)",
+      "type": "visible",
+      "input": {
+        "minRating": 1.0
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "rating > minRating",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-very-high",
+      "name": "Caso Limite: minRating = 9.5 (poucos)",
+      "type": "visible",
+      "input": {
+        "minRating": 9.5
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "rating > minRating",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-impossible",
+      "name": "Caso Limite: minRating = 10.0 (nenhum)",
+      "type": "visible",
+      "input": {
+        "minRating": 10.0
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "rating > minRating",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range-1",
+      "name": "Caso Médio: minRating = 5.0",
+      "type": "visible",
+      "input": {
+        "minRating": 5.0
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "rating > minRating",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range-2",
+      "name": "Caso Médio: minRating = 8.0",
+      "type": "visible",
+      "input": {
+        "minRating": 8.0
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "rating > minRating",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "decimal-precision",
+      "name": "Caso Limite: minRating = 6.3 (precisão decimal)",
+      "type": "visible",
+      "input": {
+        "minRating": 6.3
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "rating > minRating",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    }
+  ],
+  "hints": [
+    "Atenção: a condição é rating > minRating (estritamente maior, não >=)",
+    "Pagine através de todas as páginas",
+    "Mantenha a ordem da API"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/movies",
+        "method": "GET",
+        "description": "Obter lista paginada de filmes"
+      }
+    ]
+  },
+  "referenceCode": "async function getHighRatedMovies(minRating: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/movies?page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((movie: any) => movie.rating > minRating)\n      .forEach((movie: any) => results.push(movie.title));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}

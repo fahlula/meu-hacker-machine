@@ -1,0 +1,324 @@
+{
+  "id": "food-outlets",
+  "title": "REST API: Restaurantes Relevantes",
+  "difficulty": "medium",
+  "score": 75,
+  "category": "REST API",
+  "timeLimit": 140,
+  "description": "# REST API: Restaurantes Relevantes\n\nUma REST API contém informações sobre restaurantes em várias cidades. Dado o nome da cidade e o custo máximo para 2 pessoas, o objetivo é usar a API para obter a lista de restaurantes que pertencem a esta cidade e têm um custo estimado menor ou igual ao custo fornecido. A API retorna dados paginados.\n\n## Acesso à API\n\nPara acessar as informações, execute uma requisição HTTP GET para:\n\n```\n/api/food_outlets?city=<city>&page=<pageNumber>\n```\n\nonde `<city>` é a cidade para obter os restaurantes e `<pageNumber>` é um inteiro que denota a página dos resultados a retornar.\n\nPor exemplo, uma requisição GET para `/api/food_outlets?city=Seattle&page=2` retorna dados associados à cidade Seattle, na segunda página dos resultados.\n\n## Formato da Resposta\n\nA resposta para tal requisição é um JSON com os seguintes 5 campos:\n\n- **page**: A página atual dos resultados\n- **per_page**: O número máximo de registros retornados por página\n- **total**: O número total de registros no banco de dados\n- **total_pages**: O número total de páginas com resultados\n- **data**: Ou um array vazio ou um array de objetos de restaurantes\n\nCada objeto de restaurante tem o seguinte schema:\n\n- **city**: cidade que consultamos onde o restaurante está localizado [STRING]\n- **name**: nome do restaurante [STRING]\n- **estimated_cost**: custo estimado para 2 pessoas [INTEGER]\n- **user_rating**: objeto com:\n  - **average_rating**: avaliação média do restaurante [FLOAT]\n  - **votes**: total de votos para o restaurante [INTEGER]\n- **id**: identificador único do restaurante [INTEGER]\n\n### Exemplo de Objeto de Restaurante\n\n```json\n{\n  \"city\": \"Houston\",\n  \"name\": \"Cocoa Tree\",\n  \"estimated_cost\": 10,\n  \"user_rating\": {\n    \"average_rating\": 4.5,\n    \"votes\": 969\n  },\n  \"id\": 938\n}\n```\n\n## Descrição da Função\n\nComplete a função `getRelevantFoodOutlets` no editor abaixo. Execute a paginação para obter todos os resultados.\n\n**getRelevantFoodOutlets** tem o(s) seguinte(s) parâmetro(s):\n- **city**: string denotando a cidade do restaurante\n- **maxCost**: custo máximo para 2 pessoas\n\n**Retorna**: Um array de strings denotando os nomes dos restaurantes que estão localizados nesta cidade e têm um custo estimado menor ou igual ao maxCost fornecido. Os nomes no array devem ser ordenados na ordem em que aparecem na resposta da API.\n\n## Restrições\n\n- A cidade fornecida sempre terá dados retornados da API.\n\n## Caso de Exemplo 0\n\n### Entrada de Exemplo\n```\nDenver\n50\n```\n\n### Saída de Exemplo\n```\nBKC DIVE\nVedge\n```\n\n### Explicação\nA função faz chamadas paginadas para a API `/api/food_outlets?city=Denver&page=1`, `/api/food_outlets?city=Denver&page=2` e assim por diante, para obter todos os restaurantes na cidade Denver. Ela retorna os restaurantes para os quais estimated_cost é menor ou igual ao maxCost fornecido 50.\n\n## Caso de Exemplo 1\n\n### Entrada de Exemplo\n```\nHouston\n30\n```\n\n### Saída de Exemplo\n```\nNasi And Mee\nZaatar Arabic Restaurant\nMilano Ice Cream\nThaal Kitchen\nAlakapuri\nNawras Seafood Restaurant\nBrindhavan Vegetarian Restaurant\nMustake Multicuisine Restaurant\nCocoa Tree\n```\n\n### Explicação\nA função faz chamadas paginadas para obter todos os restaurantes na cidade Houston. Ela retorna os restaurantes para os quais estimated_cost é menor ou igual ao maxCost fornecido 30.",
+  "functionSignature": {
+    "name": "getRelevantFoodOutlets",
+    "params": [
+      {
+        "name": "city",
+        "type": "string"
+      },
+      {
+        "name": "maxCost",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<string[]>"
+  },
+  "starterCode": "async function getRelevantFoodOutlets(city: string, maxCost: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/food_outlets?city=${city}&page=${page}`);\n    const json: any = await response.json();\n\n    totalPages = json.total_pages;\n\n    json.data\n      .filter((outlet: any) => outlet.estimated_cost <= maxCost)\n      .forEach((outlet: any) => results.push(outlet.name));\n\n    page++;\n  }\n\n  return results;\n}\n\n// Test the function\n(async () => {\n  const result = await getRelevantFoodOutlets('Denver', 50);\n  console.log(result);\n})();",
+  "mockApi": {
+    "proxyPath": "/api/food_outlets",
+    "endpoints": [
+      {
+        "path": "/food_outlets",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "city",
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 800,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 54321,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "city": "{{chance.pickone(['Denver', 'Houston', 'Seattle', 'Austin', 'Portland', 'Miami', 'Chicago', 'Boston', 'Phoenix', 'Atlanta', 'Dallas', 'San Diego', 'Las Vegas', 'Orlando', 'Nashville', 'Detroit', 'Minneapolis', 'Philadelphia', 'San Francisco', 'New York'])}}",
+            "name": "{{chance.pickone(['The', 'Golden', 'Royal', 'Urban', 'Fresh', 'Spice', 'Corner', 'Little', 'Big'])}} {{chance.pickone(['Bistro', 'Kitchen', 'Grill', 'Cafe', 'Eatery', 'Table', 'Bowl', 'Spoon', 'Fork', 'Palace'])}}",
+            "estimated_cost": "{{chance.integer({min: 12, max: 125})}}",
+            "cuisine": "{{chance.pickone(['Italian', 'Chinese', 'Indian', 'Mexican', 'Japanese', 'Thai', 'French', 'American', 'Mediterranean', 'Korean'])}}",
+            "user_rating": {
+              "average_rating": "{{chance.floating({min: 3.2, max: 5.0, fixed: 1})}}",
+              "votes": "{{chance.integer({min: 50, max: 2500})}}"
+            },
+            "address": "{{chance.address()}}",
+            "phone": "{{chance.phone()}}"
+          },
+          "totalRecords": 800
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": "{{cityDataLength}}",
+          "total_pages": "{{Math.ceil(cityDataLength / 10)}}",
+          "data": "{{filtered_by_city}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo 0: filtrar por custo <= 50",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 50
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "sample-1",
+      "name": "Caso de Exemplo 1: filtrar por custo <= 30",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 30
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-very-low-cost",
+      "name": "Caso Limite: maxCost muito baixo = 15",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 15
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-very-high-cost",
+      "name": "Caso Limite: maxCost muito alto = 1000",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 1000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-mid-range",
+      "name": "Teste: custos de faixa média = 60",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 60
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-low-budget",
+      "name": "Teste: orçamento baixo = 20",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 20
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-medium-budget",
+      "name": "Teste: orçamento médio = 45",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 45
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-high-budget",
+      "name": "Teste: orçamento alto = 80",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 80
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-very-high-budget",
+      "name": "Teste: orçamento muito alto = 100",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 100
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-minimum-cost",
+      "name": "Teste: custo mínimo = 12",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 12
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-exact-boundary-25",
+      "name": "Teste: limite exato = 25",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 25
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-exact-boundary-70",
+      "name": "Teste: limite exato = 70",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 70
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-max-range",
+      "name": "Teste: custo máximo do range = 125",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 125
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-mid-low-35",
+      "name": "Teste: meio-baixo = 35",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 35
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-mid-high-90",
+      "name": "Teste: meio-alto = 90",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "maxCost": 90
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "estimated_cost <= maxCost",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    }
+  ],
+  "hints": [
+    "Lembre-se de paginar através de todos os resultados para a cidade fornecida",
+    "Filtre restaurantes onde estimated_cost <= maxCost",
+    "Preserve a ordem das respostas da API"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/food_outlets",
+        "method": "GET",
+        "description": "Obter lista paginada de restaurantes por cidade",
+        "queryParams": [
+          {
+            "name": "city",
+            "type": "string",
+            "required": true,
+            "description": "Nome da cidade para filtrar restaurantes"
+          },
+          {
+            "name": "page",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "description": "Número da página (começa de 1)"
+          }
+        ],
+        "responseExample": "{\n  \"page\": 1,\n  \"per_page\": 10,\n  \"total\": 10,\n  \"total_pages\": 1,\n  \"data\": [\n    {\n      \"id\": 938,\n      \"city\": \"Houston\",\n      \"name\": \"Cocoa Tree\",\n      \"estimated_cost\": 10,\n      \"user_rating\": {\n        \"average_rating\": 4.5,\n        \"votes\": 969\n      }\n    }\n  ]\n}"
+      }
+    ]
+  },
+  "referenceCode": "async function getRelevantFoodOutlets(city: string, maxCost: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/food_outlets?city=${encodeURIComponent(city)}&page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((outlet: any) => outlet.estimated_cost <= maxCost)\n      .forEach((outlet: any) => results.push(outlet.name));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}

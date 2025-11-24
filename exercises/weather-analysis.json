@@ -1,0 +1,325 @@
+{
+  "id": "weather-analysis",
+  "title": "Análise de Dados Climáticos",
+  "difficulty": "medium",
+  "score": 80,
+  "category": "REST API",
+  "timeLimit": 150,
+  "description": "# Análise de Dados Climáticos\n\nUma REST API contém dados meteorológicos de várias cidades. Dada uma cidade e uma faixa de temperatura (mínima e máxima em Celsius), retorne as datas em que a temperatura estava dentro dessa faixa.\n\n## Acesso à API\n\n```\n/api/weather?city=<cityName>&page=<pageNumber>\n```\n\n## Formato da Resposta\n\nResposta paginada com array de registros climáticos.\n\nCada registro tem:\n- **id**: ID único\n- **city**: Nome da cidade\n- **date**: Data (formato YYYY-MM-DD)\n- **temperature**: Temperatura em Celsius\n- **humidity**: Umidade (%)\n- **condition**: Condição (Sunny, Rainy, Cloudy, etc)\n\n## Descrição da Função\n\nComplete a função `getDatesInTemperatureRange`.\n\n**Parâmetros**:\n- **city**: nome da cidade\n- **minTemp**: temperatura mínima em °C (exclusivo - deve ser estritamente maior)\n- **maxTemp**: temperatura máxima em °C (exclusivo - deve ser estritamente menor)\n\n**Retorna**: Array de datas (strings) onde minTemp < temperature < maxTemp.",
+  "functionSignature": {
+    "name": "getDatesInTemperatureRange",
+    "params": [
+      {
+        "name": "city",
+        "type": "string"
+      },
+      {
+        "name": "minTemp",
+        "type": "number"
+      },
+      {
+        "name": "maxTemp",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<string[]>"
+  },
+  "starterCode": "async function getDatesInTemperatureRange(city: string, minTemp: number, maxTemp: number): Promise<string[]> {\n  // TODO: Implementar\n  return [];\n}",
+  "mockApi": {
+    "proxyPath": "/api/weather",
+    "endpoints": [
+      {
+        "path": "/weather",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "city",
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 1000,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 55555,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "city": "{{chance.pickone(['Seattle', 'Miami', 'Phoenix', 'Minneapolis', 'San Diego', 'Portland', 'Boston', 'Denver', 'Chicago', 'New York', 'Los Angeles', 'Atlanta', 'Dallas', 'Houston', 'Philadelphia', 'Detroit', 'San Francisco', 'Las Vegas', 'Nashville', 'Austin'])}}",
+            "date": "{{chance.date({string: true, year: chance.year({min: 2023, max: 2024})})}}",
+            "temperature": "{{chance.integer({min: -15, max: 42})}}",
+            "humidity": "{{chance.integer({min: 15, max: 100})}}",
+            "condition": "{{chance.pickone(['Sunny', 'Rainy', 'Cloudy', 'Snowy', 'Foggy', 'Windy', 'Stormy', 'Clear'])}}",
+            "wind_speed": "{{chance.integer({min: 0, max: 80})}}",
+            "pressure": "{{chance.integer({min: 980, max: 1040})}}",
+            "visibility": "{{chance.integer({min: 1, max: 20})}}"
+          },
+          "totalRecords": 1000
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": "{{cityDataLength}}",
+          "total_pages": "{{Math.ceil(cityDataLength / 10)}}",
+          "data": "{{filtered_by_city}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo: 15°C < temp < 25°C",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 15,
+        "maxTemp": 25
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-full-range",
+      "name": "Caso Limite: Faixa completa (-15 a 45)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": -15,
+        "maxTemp": 45
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-narrow",
+      "name": "Caso Limite: Faixa estreita (1 grau)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 19,
+        "maxTemp": 21
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-cold",
+      "name": "Caso Limite: Temperaturas frias (-5 a 5)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": -5,
+        "maxTemp": 5
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-hot",
+      "name": "Caso Limite: Temperaturas quentes (30 a 40)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 30,
+        "maxTemp": 40
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range",
+      "name": "Caso Médio: 10°C < temp < 20°C",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 10,
+        "maxTemp": 20
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-impossible",
+      "name": "Caso Limite: Faixa impossível (min > max)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 30,
+        "maxTemp": 20
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-boundary",
+      "name": "Caso Limite: Valores nos limites",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 0,
+        "maxTemp": 1
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "cold-range-1",
+      "name": "Teste: temperatura entre 20 e 40 graus",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 20,
+        "maxTemp": 40
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "cool-range-1",
+      "name": "Teste: temperatura entre 30 e 50 graus",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 30,
+        "maxTemp": 50
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mild-range-1",
+      "name": "Teste: temperatura entre 40 e 60 graus",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 40,
+        "maxTemp": 60
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "warm-range-1",
+      "name": "Teste: temperatura entre 50 e 70 graus",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 50,
+        "maxTemp": 70
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "hot-range-1",
+      "name": "Teste: temperatura entre 60 e 80 graus",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 60,
+        "maxTemp": 80
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "very-hot-range-1",
+      "name": "Teste: temperatura entre 70 e 90 graus",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 70,
+        "maxTemp": 90
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "cool-range-2",
+      "name": "Teste: temperatura entre 25 e 35 graus",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minTemp": 25,
+        "maxTemp": 35
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "temperature > minTemp && temperature < maxTemp",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    }
+  ],
+  "hints": [
+    "ATENÇÃO: A condição é exclusiva em ambos os lados (> e <, não >= e <=)",
+    "Retorne as DATAS, não as temperaturas",
+    "Se minTemp >= maxTemp, o resultado deve ser vazio"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/weather",
+        "method": "GET",
+        "description": "Obter dados meteorológicos por cidade"
+      }
+    ]
+  },
+  "referenceCode": "async function getDatesInTemperatureRange(city: string, minTemp: number, maxTemp: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/weather?city=${encodeURIComponent(city)}&page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((record: any) => record.temperature > minTemp && record.temperature < maxTemp)\n      .forEach((record: any) => results.push(record.date));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}

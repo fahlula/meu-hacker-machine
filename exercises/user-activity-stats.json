@@ -1,0 +1,230 @@
+{
+  "id": "user-activity-stats",
+  "title": "Estatísticas de Atividade de Usuários",
+  "difficulty": "hard",
+  "score": 100,
+  "category": "REST API",
+  "timeLimit": 180,
+  "description": "# Estatísticas de Atividade de Usuários\n\nUma REST API contém logs de atividade de usuários. Dado um tipo de ação e limites de duração (mínimo e máximo em minutos), retorne os IDs dos usuários que realizaram a ação especificada com duração dentro da faixa.\n\n## Acesso à API\n\n```\n/api/user_activity?action=<actionType>&page=<pageNumber>\n```\n\n## Formato da Resposta\n\nResposta paginada com array de logs de atividade.\n\nCada log tem:\n- **id**: ID único do log\n- **user_id**: ID do usuário\n- **action**: Tipo de ação (login, purchase, video_watch, download, etc)\n- **duration_minutes**: Duração da ação em minutos\n- **timestamp**: Timestamp da ação\n- **device**: Dispositivo usado\n\n## Descrição da Função\n\nComplete a função `getUsersByActivityDuration`.\n\n**Parâmetros**:\n- **action**: tipo de ação a filtrar\n- **minDuration**: duração mínima em minutos (exclusivo - deve ser estritamente maior)\n- **maxDuration**: duração máxima em minutos (inclusivo)\n\n**Retorna**: Array de user_ids (números) onde minDuration < duration_minutes <= maxDuration.",
+  "functionSignature": {
+    "name": "getUsersByActivityDuration",
+    "params": [
+      {
+        "name": "action",
+        "type": "string"
+      },
+      {
+        "name": "minDuration",
+        "type": "number"
+      },
+      {
+        "name": "maxDuration",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<number[]>"
+  },
+  "starterCode": "async function getUsersByActivityDuration(action: string, minDuration: number, maxDuration: number): Promise<number[]> {\n  // TODO: Implementar\n  // Atenção: retornar array de NÚMEROS (user_id), não strings\n  return [];\n}",
+  "mockApi": {
+    "proxyPath": "/api/user_activity",
+    "endpoints": [
+      {
+        "path": "/user_activity",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "action",
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 1200,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 88888,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "user_id": "{{chance.integer({min: 1, max: 600})}}",
+            "username": "{{chance.twitter().substring(1)}}",
+            "action": "{{chance.pickone(['login', 'purchase', 'video_watch', 'download', 'upload', 'search', 'share', 'comment', 'like'])}}",
+            "duration_minutes": "{{chance.integer({min: 1, max: 200})}}",
+            "timestamp": "{{chance.date({string: true, year: 2024})}}",
+            "device": "{{chance.pickone(['mobile', 'desktop', 'tablet', 'smart_tv'])}}",
+            "browser": "{{chance.pickone(['Chrome', 'Firefox', 'Safari', 'Edge', 'Opera'])}}",
+            "ip_address": "{{chance.ip()}}"
+          },
+          "totalRecords": 1200
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": "{{cityDataLength}}",
+          "total_pages": "{{Math.ceil(cityDataLength / 10)}}",
+          "data": "{{filtered_by_city}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo: 10 < duration <= 30",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minDuration": 10,
+        "maxDuration": 30
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "duration_minutes > minDuration && duration_minutes <= maxDuration",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-short-duration",
+      "name": "Caso Limite: 0 < duration <= 5 (muito curto)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minDuration": 0,
+        "maxDuration": 5
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "duration_minutes > minDuration && duration_minutes <= maxDuration",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-long-duration",
+      "name": "Caso Limite: 150 < duration <= 180 (muito longo)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minDuration": 150,
+        "maxDuration": 180
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "duration_minutes > minDuration && duration_minutes <= maxDuration",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-full-range",
+      "name": "Caso Limite: 0 < duration <= 200 (todos)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minDuration": 0,
+        "maxDuration": 200
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "duration_minutes > minDuration && duration_minutes <= maxDuration",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-narrow-range",
+      "name": "Caso Limite: 59 < duration <= 61 (faixa estreita)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minDuration": 59,
+        "maxDuration": 61
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "duration_minutes > minDuration && duration_minutes <= maxDuration",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "mid-range-1",
+      "name": "Caso Médio: 20 < duration <= 60",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minDuration": 20,
+        "maxDuration": 60
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "duration_minutes > minDuration && duration_minutes <= maxDuration",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "mid-range-2",
+      "name": "Caso Médio: 60 < duration <= 120",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minDuration": 60,
+        "maxDuration": 120
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "duration_minutes > minDuration && duration_minutes <= maxDuration",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-impossible",
+      "name": "Caso Limite: min >= max (impossível)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minDuration": 100,
+        "maxDuration": 50
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "duration_minutes > minDuration && duration_minutes <= maxDuration",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-boundary-inclusive",
+      "name": "Caso Limite: Testar inclusividade do maxDuration",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minDuration": 29,
+        "maxDuration": 30
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "duration_minutes > minDuration && duration_minutes <= maxDuration",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    }
+  ],
+  "hints": [
+    "Condição: minDuration < duration_minutes <= maxDuration",
+    "minDuration é EXCLUSIVO (>), maxDuration é INCLUSIVO (<=)",
+    "Retorne array de NÚMEROS (user_id), não strings",
+    "A API já filtra por action"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/user_activity",
+        "method": "GET",
+        "description": "Obter logs de atividade filtrados por tipo de ação"
+      }
+    ]
+  },
+  "referenceCode": "async function getUsersByActivityDuration(action: string, minDuration: number, maxDuration: number): Promise<number[]> {\n  const results: number[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/user_activity?action=${encodeURIComponent(action)}&page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((log: any) => log.duration_minutes > minDuration && log.duration_minutes <= maxDuration)\n      .forEach((log: any) => results.push(log.user_id));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}

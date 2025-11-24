@@ -1,0 +1,140 @@
+.question-panel-container {
+  height: 100%;
+  overflow: auto;
+  padding: 20px;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-default);
+}
+
+.difficulty-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  fontSize: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.difficulty-badge.easy {
+  background-color: rgba(0, 255, 65, 0.15);
+  color: var(--success);
+  border: 1px solid var(--success);
+}
+
+.difficulty-badge.medium {
+  background-color: rgba(255, 170, 0, 0.15);
+  color: var(--warning);
+  border: 1px solid var(--warning);
+}
+
+.difficulty-badge.hard {
+  background-color: rgba(255, 68, 68, 0.15);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+.hints-section {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: var(--bg-tertiary);
+  border-radius: 6px;
+  border: 1px solid var(--border-default);
+}
+
+.hints-summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--accent-primary);
+  user-select: none;
+}
+
+.hints-summary:hover {
+  color: var(--accent-hover);
+}
+
+.hints-list {
+  margin-top: 10px;
+  padding-left: 20px;
+}
+
+.hints-list li {
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.api-documentation {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: var(--bg-elevated);
+  border-radius: 6px;
+  border: 1px solid var(--border-default);
+}
+
+.api-documentation h3 {
+  color: var(--accent-primary);
+  margin-bottom: 12px;
+}
+
+.api-documentation h4 {
+  color: var(--text-primary);
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.api-documentation code {
+  background-color: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--accent-primary);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.9em;
+}
+
+.api-endpoint {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: var(--bg-tertiary);
+  border-radius: 4px;
+  border-left: 3px solid var(--accent-primary);
+}
+
+.query-params {
+  margin-top: 10px;
+}
+
+.query-params strong {
+  color: var(--accent-primary);
+}
+
+.query-params ul {
+  margin-top: 8px;
+  padding-left: 20px;
+}
+
+.query-params li {
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.response-example-summary {
+  cursor: pointer;
+  margin-top: 8px;
+  color: var(--accent-primary);
+  user-select: none;
+}
+
+.response-example-summary:hover {
+  color: var(--accent-hover);
+}
+
+.response-example-pre {
+  background-color: var(--code-bg);
+  padding: 12px;
+  border-radius: 4px;
+  overflow: auto;
+  font-size: 12px;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  margin-top: 8px;
+  border: 1px solid var(--code-border);
+}

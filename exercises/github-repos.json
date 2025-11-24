@@ -1,0 +1,286 @@
+{
+  "id": "github-repos",
+  "title": "Repositórios GitHub Populares",
+  "difficulty": "easy",
+  "score": 50,
+  "category": "REST API",
+  "timeLimit": 120,
+  "description": "# Repositórios GitHub Populares\n\nUma REST API contém informações sobre repositórios GitHub. Dado um número mínimo de stars, retorne os nomes dos repositórios que têm pelo menos esse número de stars.\n\n## Acesso à API\n\n```\n/api/repositories?page=<pageNumber>\n```\n\n## Formato da Resposta\n\nResposta paginada com array de repositórios.\n\nCada repositório tem:\n- **id**: ID único\n- **name**: Nome do repositório\n- **owner**: Nome do proprietário\n- **stars**: Número de stars\n- **forks**: Número de forks\n- **language**: Linguagem principal\n- **open_issues**: Issues abertas\n\n## Descrição da Função\n\nComplete a função `getPopularRepositories`.\n\n**Parâmetros**:\n- **minStars**: número mínimo de stars (inclusivo)\n\n**Retorna**: Array de nomes de repositórios com stars >= minStars.",
+  "functionSignature": {
+    "name": "getPopularRepositories",
+    "params": [
+      {
+        "name": "minStars",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<string[]>"
+  },
+  "starterCode": "async function getPopularRepositories(minStars: number): Promise<string[]> {\n  // TODO: Implementar\n  return [];\n}",
+  "mockApi": {
+    "proxyPath": "/api/repositories",
+    "endpoints": [
+      {
+        "path": "/repositories",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 300,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 99999,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "name": "{{chance.word()}}-{{chance.word()}}",
+            "owner": "{{chance.twitter().substring(1)}}",
+            "stars": "{{chance.integer({min: 0, max: 55000})}}",
+            "forks": "{{chance.integer({min: 0, max: 12000})}}",
+            "language": "{{chance.pickone(['JavaScript', 'Python', 'Java', 'Go', 'Rust', 'TypeScript', 'C++', 'Ruby', 'PHP', 'Swift', 'Kotlin'])}}",
+            "open_issues": "{{chance.integer({min: 0, max: 600})}}",
+            "description": "{{chance.sentence({words: 8})}}",
+            "created_at": "{{chance.date({string: true, year: chance.year({min: 2010, max: 2024})})}}"
+          },
+          "totalRecords": 300
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": 300,
+          "total_pages": 30,
+          "data": "{{generated_array}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo: minStars = 1000",
+      "type": "visible",
+      "input": {
+        "minStars": 1000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-zero",
+      "name": "Caso Limite: minStars = 0 (todos)",
+      "type": "visible",
+      "input": {
+        "minStars": 0
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-very-popular",
+      "name": "Caso Limite: minStars = 40000 (muito popular)",
+      "type": "visible",
+      "input": {
+        "minStars": 40000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-impossible",
+      "name": "Caso Limite: minStars = 60000 (impossível)",
+      "type": "visible",
+      "input": {
+        "minStars": 60000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range-1",
+      "name": "Caso Médio: minStars = 5000",
+      "type": "visible",
+      "input": {
+        "minStars": 5000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range-2",
+      "name": "Caso Médio: minStars = 10000",
+      "type": "visible",
+      "input": {
+        "minStars": 10000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-low",
+      "name": "Caso Limite: minStars = 100 (muitos resultados)",
+      "type": "visible",
+      "input": {
+        "minStars": 100
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-boundary",
+      "name": "Caso Limite: minStars = 49999 (no limite)",
+      "type": "visible",
+      "input": {
+        "minStars": 49999
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "low-stars-1",
+      "name": "Teste: repositórios com mínimo 50 estrelas",
+      "type": "visible",
+      "input": {
+        "minStars": 50
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "low-stars-2",
+      "name": "Teste: repositórios com mínimo 150 estrelas",
+      "type": "visible",
+      "input": {
+        "minStars": 150
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "medium-stars-1",
+      "name": "Teste: repositórios com mínimo 200 estrelas",
+      "type": "visible",
+      "input": {
+        "minStars": 200
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "medium-stars-2",
+      "name": "Teste: repositórios com mínimo 300 estrelas",
+      "type": "visible",
+      "input": {
+        "minStars": 300
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "medium-stars-3",
+      "name": "Teste: repositórios com mínimo 400 estrelas",
+      "type": "visible",
+      "input": {
+        "minStars": 400
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "high-stars-1",
+      "name": "Teste: repositórios com mínimo 500 estrelas",
+      "type": "visible",
+      "input": {
+        "minStars": 500
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "high-stars-2",
+      "name": "Teste: repositórios com mínimo 750 estrelas",
+      "type": "visible",
+      "input": {
+        "minStars": 750
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "stars >= minStars",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    }
+  ],
+  "hints": [
+    "Busque TODAS as páginas",
+    "Filtre repositórios onde stars >= minStars",
+    "Mantenha a ordem da API"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/repositories",
+        "method": "GET",
+        "description": "Obter lista paginada de repositórios"
+      }
+    ]
+  },
+  "referenceCode": "async function getPopularRepositories(minStars: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/repositories?page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((repo: any) => repo.stars >= minStars)\n      .forEach((repo: any) => results.push(repo.name));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}

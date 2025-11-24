@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Exercise Schema",
+  "description": "Schema for defining REST API coding challenges",
+  "type": "object",
+  "required": ["id", "title", "difficulty", "score", "category", "description", "functionSignature", "starterCode", "mockApi", "testCases"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the exercise"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display title of the exercise"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["easy", "medium", "hard"]
+    },
+    "score": {
+      "type": "number",
+      "description": "Points awarded for solving"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category tag (e.g., 'REST API', 'Algorithm')"
+    },
+    "timeLimit": {
+      "type": "number",
+      "description": "Optional time limit in minutes"
+    },
+    "description": {
+      "type": "string",
+      "description": "Full problem description in markdown"
+    },
+    "functionSignature": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "params": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" }
+            }
+          }
+        },
+        "returnType": {
+          "type": "string"
+        }
+      }
+    },
+    "starterCode": {
+      "type": "string",
+      "description": "Initial code template for the user"
+    },
+    "mockApi": {
+      "type": "object",
+      "properties": {
+        "originalUrl": {
+          "type": "string",
+          "description": "Original HackerRank API URL"
+        },
+        "proxyPath": {
+          "type": "string",
+          "description": "Local proxy path"
+        },
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "testCases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "type": { "type": "string", "enum": ["visible", "hidden"] },
+          "input": { "type": "object" },
+          "expectedOutput": {},
+          "timeout": { "type": "number" }
+        }
+      }
+    },
+    "hints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "referenceCode": {
+      "type": "string",
+      "description": "Reference solution"
+    }
+  }
+}

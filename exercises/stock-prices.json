@@ -1,0 +1,217 @@
+{
+  "id": "stock-prices",
+  "title": "Análise de Preços de Ações",
+  "difficulty": "hard",
+  "score": 100,
+  "category": "REST API",
+  "timeLimit": 180,
+  "description": "# Análise de Preços de Ações\n\nUma REST API contém dados históricos de preços de ações. Dado um símbolo de ação (ticker) e um percentual mínimo de variação, retorne as datas em que o preço de fechamento foi pelo menos X% maior que o preço de abertura.\n\n## Acesso à API\n\n```\n/api/stocks?ticker=<symbol>&page=<pageNumber>\n```\n\n## Formato da Resposta\n\nResposta paginada com array de registros de ações.\n\nCada registro tem:\n- **id**: ID único\n- **ticker**: Símbolo da ação\n- **date**: Data (YYYY-MM-DD)\n- **open_price**: Preço de abertura\n- **close_price**: Preço de fechamento\n- **volume**: Volume de negociação\n- **high**: Preço máximo do dia\n- **low**: Preço mínimo do dia\n\n## Descrição da Função\n\nComplete a função `getDatesWithPriceIncrease`.\n\n**Parâmetros**:\n- **ticker**: símbolo da ação\n- **minPercentIncrease**: percentual mínimo de aumento (ex: 5 significa 5%)\n\n**Retorna**: Array de datas onde o aumento foi >= minPercentIncrease%.\n\n**Fórmula**: percentIncrease = ((close_price - open_price) / open_price) * 100",
+  "functionSignature": {
+    "name": "getDatesWithPriceIncrease",
+    "params": [
+      {
+        "name": "ticker",
+        "type": "string"
+      },
+      {
+        "name": "minPercentIncrease",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<string[]>"
+  },
+  "starterCode": "async function getDatesWithPriceIncrease(ticker: string, minPercentIncrease: number): Promise<string[]> {\n  // TODO: Implementar\n  // Dica: percentIncrease = ((close - open) / open) * 100\n  return [];\n}",
+  "mockApi": {
+    "proxyPath": "/api/stocks",
+    "endpoints": [
+      {
+        "path": "/stocks",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "ticker",
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 900,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 77777,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "ticker": "{{chance.pickone(['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX', 'AMD', 'INTC'])}}",
+            "date": "{{chance.date({string: true, year: chance.year({min: 2020, max: 2024})})}}",
+            "open_price": "{{chance.floating({min: 80, max: 550, fixed: 2})}}",
+            "close_price": "{{chance.floating({min: 80, max: 550, fixed: 2})}}",
+            "volume": "{{chance.integer({min: 5000000, max: 150000000})}}",
+            "high": "{{chance.floating({min: 85, max: 560, fixed: 2})}}",
+            "low": "{{chance.floating({min: 75, max: 540, fixed: 2})}}",
+            "market_cap": "{{chance.integer({min: 100000000000, max: 3000000000000})}}"
+          },
+          "totalRecords": 900
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": "{{cityDataLength}}",
+          "total_pages": "{{Math.ceil(cityDataLength / 10)}}",
+          "data": "{{filtered_by_city}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo: minPercentIncrease = 3",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minPercentIncrease": 3
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "((close_price - open_price) / open_price * 100) >= minPercentIncrease",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-any-increase",
+      "name": "Caso Limite: minPercentIncrease = 0 (qualquer aumento)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minPercentIncrease": 0
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "((close_price - open_price) / open_price * 100) >= minPercentIncrease",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-large-increase",
+      "name": "Caso Limite: minPercentIncrease = 20 (grande aumento)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minPercentIncrease": 20
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "((close_price - open_price) / open_price * 100) >= minPercentIncrease",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-small-increase",
+      "name": "Caso Limite: minPercentIncrease = 0.5 (pequeno aumento)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minPercentIncrease": 0.5
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "((close_price - open_price) / open_price * 100) >= minPercentIncrease",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "mid-range-5",
+      "name": "Caso Médio: minPercentIncrease = 5",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minPercentIncrease": 5
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "((close_price - open_price) / open_price * 100) >= minPercentIncrease",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "mid-range-10",
+      "name": "Caso Médio: minPercentIncrease = 10",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minPercentIncrease": 10
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "((close_price - open_price) / open_price * 100) >= minPercentIncrease",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-impossible",
+      "name": "Caso Limite: minPercentIncrease = 50 (quase impossível)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minPercentIncrease": 50
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "((close_price - open_price) / open_price * 100) >= minPercentIncrease",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-negative-allowed",
+      "name": "Caso Limite: minPercentIncrease = -10 (incluindo quedas)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minPercentIncrease": -10
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "((close_price - open_price) / open_price * 100) >= minPercentIncrease",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    },
+    {
+      "id": "edge-decimal",
+      "name": "Caso Limite: minPercentIncrease = 2.75 (decimal)",
+      "type": "visible",
+      "input": {
+        "city": "ANY_CITY",
+        "minPercentIncrease": 2.75
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "((close_price - open_price) / open_price * 100) >= minPercentIncrease",
+        "preserveOrder": true
+      },
+      "timeout": 15000
+    }
+  ],
+  "hints": [
+    "Calcule: percentIncrease = ((close_price - open_price) / open_price) * 100",
+    "Retorne datas onde percentIncrease >= minPercentIncrease",
+    "Cuidado com divisão por zero (mas open_price nunca é 0 neste exercício)",
+    "Percentuais negativos são permitidos (representam quedas)"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/stocks",
+        "method": "GET",
+        "description": "Obter dados históricos de ações por ticker"
+      }
+    ]
+  },
+  "referenceCode": "async function getDatesWithPriceIncrease(ticker: string, minPercentIncrease: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/stocks?ticker=${encodeURIComponent(ticker)}&page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((stock: any) => {\n        const percentIncrease = ((stock.close_price - stock.open_price) / stock.open_price) * 100;\n        return percentIncrease >= minPercentIncrease;\n      })\n      .forEach((stock: any) => results.push(stock.date));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}

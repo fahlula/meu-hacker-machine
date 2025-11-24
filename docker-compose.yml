@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: challenges-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./exercises:/app/exercises:ro
+      - ./backend/src:/app/src
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - EXERCISES_DIR=/app/exercises
+      - PUBLIC_URL=${PUBLIC_URL:-http://localhost}
+    networks:
+      - challenges-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build: ./frontend
+    container_name: challenges-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/src:/app/src
+    environment:
+      - VITE_API_URL=http://localhost/api
+    networks:
+      - challenges-network
+    depends_on:
+      - backend
+
+  nginx:
+    build: ./nginx
+    container_name: challenges-proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - challenges-network
+
+networks:
+  challenges-network:
+    driver: bridge

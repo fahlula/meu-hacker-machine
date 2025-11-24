@@ -1,0 +1,20 @@
+{
+  "name": "challenge-workspace",
+  "version": "1.0.0",
+  "description": "Workspace for coding challenges",
+  "main": "solution.ts",
+  "scripts": {
+    "dev": "ts-node solution.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0",
+    "axios": "^1.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/node-fetch": "^2.6.9",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2"
+  }
+}

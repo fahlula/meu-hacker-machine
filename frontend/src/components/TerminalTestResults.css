@@ -1,0 +1,249 @@
+.terminal-container {
+  height: 100%;
+  background: #0d1117;
+  color: #c9d1d9;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.terminal-header {
+  padding: 12px 16px;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #58a6ff;
+}
+
+.terminal-icon {
+  font-weight: bold;
+}
+
+.terminal-content {
+  padding: 16px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.terminal-line {
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.terminal-test-block {
+  margin-bottom: 16px;
+}
+
+.terminal-text {
+  color: #c9d1d9;
+}
+
+.terminal-text.dim {
+  color: #8b949e;
+}
+
+.terminal-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.terminal-badge.success {
+  background: #238636;
+  color: #ffffff;
+}
+
+.terminal-badge.error {
+  background: #da3633;
+  color: #ffffff;
+}
+
+.terminal-score {
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.terminal-score.success {
+  color: #3fb950;
+}
+
+.terminal-score.warning {
+  color: #d29922;
+}
+
+.terminal-divider {
+  color: #30363d;
+  margin: 12px 0;
+  font-family: monospace;
+}
+
+.terminal-icon.success {
+  color: #3fb950;
+  font-weight: bold;
+}
+
+.terminal-icon.error {
+  color: #f85149;
+  font-weight: bold;
+}
+
+.terminal-indent {
+  min-width: 16px;
+}
+
+.terminal-error {
+  color: #f85149;
+  font-weight: 600;
+}
+
+.terminal-label {
+  color: #79c0ff;
+  min-width: 90px;
+}
+
+.terminal-value {
+  color: #a5d6ff;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.terminal-value.success {
+  color: #7ee787;
+}
+
+.terminal-value.error {
+  color: #ffa198;
+}
+
+.error-line {
+  background: rgba(248, 81, 73, 0.1);
+  margin-left: -16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-left: 3px solid #f85149;
+}
+
+.terminal-code-block {
+  margin: 8px 0 8px 24px;
+  padding: 12px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+
+.terminal-code-block pre {
+  margin: 0;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  color: #79c0ff;
+  line-height: 1.5;
+}
+
+.terminal-summary {
+  font-weight: 600;
+}
+
+.terminal-summary.success {
+  color: #3fb950;
+}
+
+.terminal-summary.error {
+  color: #f85149;
+}
+
+.terminal-spinner {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  color: #58a6ff;
+}
+
+@keyframes spin {
+  0% { content: '⠋'; }
+  12.5% { content: '⠙'; }
+  25% { content: '⠹'; }
+  37.5% { content: '⠸'; }
+  50% { content: '⠼'; }
+  62.5% { content: '⠴'; }
+  75% { content: '⠦'; }
+  87.5% { content: '⠧'; }
+  100% { content: '⠇'; }
+}
+
+/* Scrollbar styling */
+.terminal-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.terminal-container::-webkit-scrollbar-track {
+  background: #0d1117;
+}
+
+.terminal-container::-webkit-scrollbar-thumb {
+  background: #30363d;
+  border-radius: 5px;
+}
+
+.terminal-container::-webkit-scrollbar-thumb:hover {
+  background: #484f58;
+}
+
+/* Expandable arrays */
+.expandable-array {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.expandable-array:hover {
+  background-color: rgba(0, 255, 65, 0.1);
+}
+
+.expand-icon {
+  font-size: 10px;
+  transition: transform 0.2s;
+  color: var(--accent-primary);
+}
+
+.expand-icon.expanded {
+  transform: rotate(90deg);
+}
+
+.array-preview {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 13px;
+}
+
+.array-expanded-content {
+  margin-top: 8px;
+  margin-left: 20px;
+  padding: 12px;
+  background-color: var(--code-bg);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  max-height: 300px;
+  overflow: auto;
+}
+
+.array-expanded-content pre {
+  margin: 0;
+  color: var(--text-primary);
+}

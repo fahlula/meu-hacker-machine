@@ -1,0 +1,305 @@
+{
+  "id": "books-by-author",
+  "title": "Livros por Autor com Mínimo de Páginas",
+  "difficulty": "medium",
+  "score": 75,
+  "category": "REST API",
+  "timeLimit": 140,
+  "description": "# Livros por Autor com Mínimo de Páginas\n\nUma REST API contém informações sobre livros. Dado o nome de um autor e um número mínimo de páginas, retorne os títulos dos livros desse autor que têm pelo menos o número mínimo de páginas especificado.\n\n## Acesso à API\n\n```\n/api/books?author=<authorName>&page=<pageNumber>\n```\n\n## Formato da Resposta\n\nResposta paginada padrão com array de livros.\n\nCada livro tem:\n- **id**: ID único\n- **title**: Título do livro\n- **author**: Nome do autor\n- **pages**: Número de páginas\n- **year**: Ano de publicação\n- **isbn**: Código ISBN\n\n## Descrição da Função\n\nComplete a função `getBooksByAuthorAndPages`.\n\n**Parâmetros**:\n- **author**: nome do autor\n- **minPages**: número mínimo de páginas (inclusivo)\n\n**Retorna**: Array de títulos de livros que atendem aos critérios.",
+  "functionSignature": {
+    "name": "getBooksByAuthorAndPages",
+    "params": [
+      {
+        "name": "author",
+        "type": "string"
+      },
+      {
+        "name": "minPages",
+        "type": "number"
+      }
+    ],
+    "returnType": "Promise<string[]>"
+  },
+  "starterCode": "async function getBooksByAuthorAndPages(author: string, minPages: number): Promise<string[]> {\n  // TODO: Implementar\n  return [];\n}",
+  "mockApi": {
+    "proxyPath": "/api/books",
+    "endpoints": [
+      {
+        "path": "/books",
+        "method": "GET",
+        "paginated": true,
+        "queryParams": [
+          "author",
+          "page"
+        ],
+        "perPage": 10,
+        "totalRecords": 800,
+        "dataGenerator": {
+          "type": "array",
+          "seed": 44444,
+          "itemSchema": {
+            "id": "{{index + 1}}",
+            "title": "{{chance.sentence({words: 4})}}",
+            "author": "{{chance.pickone(['George Martin', 'J.K. Rowling', 'Stephen King', 'Agatha Christie', 'Dan Brown', 'John Grisham', 'James Patterson', 'Nora Roberts', 'Dean Koontz', 'Tom Clancy', 'Michael Connelly', 'Lee Child', 'Gillian Flynn', 'Haruki Murakami', 'Margaret Atwood', 'Neil Gaiman', 'Paulo Coelho', 'Isabel Allende', 'Gabriel Garcia Marquez', 'Salman Rushdie'])}}",
+            "pages": "{{chance.integer({min: 80, max: 1200})}}",
+            "year": "{{chance.year({min: 1960, max: 2024})}}",
+            "isbn": "{{chance.string({length: 13, pool: '0123456789'})}}",
+            "genre": "{{chance.pickone(['Fiction', 'Non-Fiction', 'Mystery', 'Science Fiction', 'Romance', 'Thriller', 'Biography', 'History', 'Fantasy'])}}",
+            "rating": "{{chance.floating({min: 2.5, max: 5.0, fixed: 1})}}"
+          },
+          "totalRecords": 800
+        },
+        "responseWrapper": {
+          "page": "{{query.page || 1}}",
+          "per_page": 10,
+          "total": "{{cityDataLength}}",
+          "total_pages": "{{Math.ceil(cityDataLength / 10)}}",
+          "data": "{{filtered_by_city}}"
+        }
+      }
+    ]
+  },
+  "testCases": [
+    {
+      "id": "sample-0",
+      "name": "Caso de Exemplo: minPages = 300",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 300
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-very-short",
+      "name": "Caso Limite: minPages = 50 (todos os livros)",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 50
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-very-long",
+      "name": "Caso Limite: minPages = 1000 (livros longos)",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 1000
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-impossible",
+      "name": "Caso Limite: minPages = 1500 (nenhum)",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 1500
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range-1",
+      "name": "Caso Médio: minPages = 500",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 500
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "mid-range-2",
+      "name": "Caso Médio: minPages = 200",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 200
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "edge-boundary",
+      "name": "Caso Limite: minPages = 1199 (próximo ao máximo)",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 1199
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-100",
+      "name": "Teste: livros com mínimo 100 páginas",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 100
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-150",
+      "name": "Teste: livros com mínimo 150 páginas",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 150
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-250",
+      "name": "Teste: livros com mínimo 250 páginas",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 250
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-350",
+      "name": "Teste: livros com mínimo 350 páginas",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 350
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-400",
+      "name": "Teste: livros com mínimo 400 páginas",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 400
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-450",
+      "name": "Teste: livros com mínimo 450 páginas",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 450
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-600",
+      "name": "Teste: livros com mínimo 600 páginas",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 600
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    },
+    {
+      "id": "test-700",
+      "name": "Teste: livros com mínimo 700 páginas",
+      "type": "visible",
+      "input": {
+        "author": "ANY_AUTHOR",
+        "minPages": 700
+      },
+      "validation": {
+        "type": "filter_check",
+        "condition": "pages >= minPages",
+        "preserveOrder": true
+      },
+      "timeout": 10000
+    }
+  ],
+  "hints": [
+    "A API já filtra por autor via query param",
+    "Você só precisa filtrar por páginas no código",
+    "Condição: pages >= minPages"
+  ],
+  "apiDocumentation": {
+    "baseUrl": "/api",
+    "endpoints": [
+      {
+        "path": "/books",
+        "method": "GET",
+        "description": "Obter livros filtrados por autor"
+      }
+    ]
+  },
+  "referenceCode": "async function getBooksByAuthorAndPages(author: string, minPages: number): Promise<string[]> {\n  const results: string[] = [];\n  let page = 1;\n  let totalPages = 1;\n\n  while (page <= totalPages) {\n    const response = await fetch(`/api/books?author=${encodeURIComponent(author)}&page=${page}`);\n    const json = await response.json();\n    totalPages = json.total_pages;\n    \n    json.data\n      .filter((book: any) => book.pages >= minPages)\n      .forEach((book: any) => results.push(book.title));\n    \n    page++;\n  }\n  \n  return results;\n}"
+}
