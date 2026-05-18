@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Exercise, TestResult } from '../types/exercise.types';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export const api = {
   // Get all exercises

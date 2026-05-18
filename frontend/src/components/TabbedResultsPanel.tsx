@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Exercise, TestResult } from '../types/exercise.types';
 import { TerminalTestResults } from './TerminalTestResults';
 import './TabbedResultsPanel.css';
@@ -18,8 +18,6 @@ interface TabbedResultsPanelProps {
   onTabChange: (tab: 'tests' | 'console' | 'manual') => void;
   onCloseManualRun: () => void;
 }
-
-type TabType = 'tests' | 'console' | 'manual';
 
 export const TabbedResultsPanel: React.FC<TabbedResultsPanelProps> = ({
   exercise,

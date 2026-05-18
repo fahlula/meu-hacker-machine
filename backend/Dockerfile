@@ -2,23 +2,16 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files first (for better caching)
-COPY package*.json ./
+COPY backend/package*.json ./
 
-# Install dependencies with legacy peer deps flag (this layer will be cached)
 RUN npm install --legacy-peer-deps
 
-# Copy config files
-COPY tsconfig.json ./
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
+COPY exercises ./exercises
 
-# Copy source code
-COPY src ./src
-
-# Build TypeScript
 RUN npm run build
 
-# Expose port
 EXPOSE 3001
 
-# Start server
 CMD ["npm", "start"]

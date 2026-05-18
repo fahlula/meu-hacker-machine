@@ -7,7 +7,7 @@ interface TerminalTestResultsProps {
   isRunning: boolean;
 }
 
-const ExpandableArray: React.FC<{ data: any[]; label: string }> = ({ data, label }) => {
+const ExpandableArray: React.FC<{ data: any[]; label: string }> = ({ data }) => {
   const [expanded, setExpanded] = useState(false);
 
   if (data.length === 0) {
