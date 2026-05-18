@@ -15,17 +15,11 @@ services:
   - type: web
     name: meu-hacker-machine-web
     runtime: static
-    buildCommand: |
-      cd frontend
-      npm install --legacy-peer-deps
-      VITE_API_URL="https://${API_HOST}/api" npm run build
+    buildCommand: cd frontend && npm install --legacy-peer-deps && npm run build
     staticPublishPath: ./frontend/dist
     envVars:
-      - key: API_HOST
-        fromService:
-          type: web
-          name: meu-hacker-machine-api
-          property: host
+      - key: VITE_API_URL
+        value: https://meu-hacker-machine-api.onrender.com/api
     routes:
       - type: rewrite
         source: /*
