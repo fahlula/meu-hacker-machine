@@ -1,6 +1,10 @@
 # MeuHackerMachine
 
+**Demo online:** https://meu-hacker-machine-web.onrender.com
+
 Plataforma de desafios de programacao estilo HackerRank, focada em exercicios de manipulacao de dados e consultas a REST APIs. Os usuarios resolvem problemas com execucao de codigo em tempo real, validacao automatica de testes e sistema de pontuacao.
+
+> A aplicacao roda no plano Free do Render — o backend hiberna apos 15 min sem trafego, entao o primeiro acesso pode levar ~30-60s para acordar.
 
 ## Tecnologias Utilizadas
 
